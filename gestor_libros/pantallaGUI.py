@@ -1,6 +1,7 @@
 import tkinter as tk
 from gestor_libros.librereria import Libreria
 import random
+from tkinter import messagebox
 
 libreria = Libreria()
 
@@ -35,28 +36,97 @@ def iniciar_interfaz():
 
     ventana.mainloop()
 
+# Updated realizar_prestamo to select a random user and book, and display the result in the same window
 def realizar_prestamo():
-    libro_a_prestar = random.choice(['Cien Años de Soledad', 'Breve Historia del Tiempo'])
-    exito = libreria.prestar_libro(1, libro_a_prestar)
-    print("¿Préstamo exitoso?", exito)
-    print("Libros prestados a Ana:", [libro.titulo for libro in libreria.listar_prestamos_usuario(1)])
+    usuarios = libreria.listar_usuarios()
+    libros_disponibles = libreria.listar_libros_disponibles()
 
+    if not usuarios or not libros_disponibles:
+        messagebox.showinfo("Error", "No hay usuarios o libros disponibles para realizar un préstamo.")
+        return
+
+    usuario = random.choice(usuarios)
+    libro = random.choice(libros_disponibles)
+
+    exito = libreria.prestar_libro(usuario.id, libro.titulo)
+    if exito:
+        messagebox.showinfo("Préstamo Exitoso", f"{usuario.nombre} ha cogido el libro '{libro.titulo}'.")
+    else:
+        messagebox.showinfo("Error", "No se pudo realizar el préstamo.")
+
+# Updated registrar_devolucion to return a book and display the result in the same window
 def registrar_devolucion():
-    libro_a_devolver = random.choice(['Cien Años de Soledad', 'Breve Historia del Tiempo'])
-    exito = libreria.devolver_libro(1, libro_a_devolver)
-    print("¿Devolución exitosa?", exito)
-    print("Libros disponibles:", [libro.titulo for libro in libreria.listar_libros_disponibles()])
+    usuarios = libreria.listar_usuarios()
+    prestamos = [libro for usuario in usuarios for libro in libreria.listar_prestamos_usuario(usuario.id)]
 
+    if not prestamos:
+        messagebox.showinfo("Error", "No hay libros prestados para devolver.")
+        return
+
+    libro = random.choice(prestamos)
+    usuario = next(u for u in usuarios if libro in libreria.listar_prestamos_usuario(u.id))
+
+    exito = libreria.devolver_libro(usuario.id, libro.titulo)
+    if exito:
+        messagebox.showinfo("Devolución Exitosa", f"{usuario.nombre} ha devuelto el libro '{libro.titulo}'.")
+    else:
+        messagebox.showinfo("Error", "No se pudo realizar la devolución.")
+
+# Updated consultar_disponibilidad to display available books in a messagebox
 def consultar_disponibilidad():
     disponibles = [libro.titulo for libro in libreria.listar_libros_disponibles()]
-    print("Libros disponibles:", disponibles)
+    if disponibles:
+        messagebox.showinfo("Libros Disponibles", f"Libros disponibles: {', '.join(disponibles)}")
+    else:
+        messagebox.showinfo("Libros Disponibles", "No hay libros disponibles.")
 
+# Updated agregar_libro to open a new window for user input
 def agregar_libro():
-    # Example: Add a new book (this can be extended to take user input via Tkinter)
-    libreria.agregar_libro('Nuevo Libro', 'Autor Desconocido', 'Género')
-    print("Libro agregado exitosamente.")
+    def guardar_libro():
+        titulo = entry_titulo.get()
+        autor = entry_autor.get()
+        genero = entry_genero.get()
+        if titulo and autor and genero:
+            libreria.agregar_libro(titulo, autor, genero)
+            messagebox.showinfo("Éxito", "Libro agregado exitosamente.")
+            ventana_nueva.destroy()
+        else:
+            messagebox.showinfo("Error", "Todos los campos son obligatorios.")
 
+    ventana_nueva = tk.Toplevel()
+    ventana_nueva.title("Agregar Nuevo Libro")
+
+    tk.Label(ventana_nueva, text="Título:").pack()
+    entry_titulo = tk.Entry(ventana_nueva)
+    entry_titulo.pack()
+
+    tk.Label(ventana_nueva, text="Autor:").pack()
+    entry_autor = tk.Entry(ventana_nueva)
+    entry_autor.pack()
+
+    tk.Label(ventana_nueva, text="Género:").pack()
+    entry_genero = tk.Entry(ventana_nueva)
+    entry_genero.pack()
+
+    tk.Button(ventana_nueva, text="Guardar", command=guardar_libro).pack()
+
+# Updated agregar_usuario to open a new window for user input
 def agregar_usuario():
-    # Example: Add a new user (this can be extended to take user input via Tkinter)
-    libreria.registrar_usuario(2, 'Juan López')
-    print("Usuario agregado exitosamente.")
+    def guardar_usuario():
+        nombre = entry_nombre.get()
+        if nombre:
+            nuevo_id = max([usuario.id for usuario in libreria.listar_usuarios()] + [0]) + 1
+            libreria.registrar_usuario(nuevo_id, nombre)
+            messagebox.showinfo("Éxito", "Usuario agregado exitosamente.")
+            ventana_nueva.destroy()
+        else:
+            messagebox.showinfo("Error", "El nombre es obligatorio.")
+
+    ventana_nueva = tk.Toplevel()
+    ventana_nueva.title("Agregar Nuevo Usuario")
+
+    tk.Label(ventana_nueva, text="Nombre:").pack()
+    entry_nombre = tk.Entry(ventana_nueva)
+    entry_nombre.pack()
+
+    tk.Button(ventana_nueva, text="Guardar", command=guardar_usuario).pack()
