@@ -21,24 +21,25 @@ class Libreria:
         """Registra un nuevo usuario."""
         self.usuarios[usuario_id] = Usuario(usuario_id, nombre)
 
-    def prestar_libro(self, usuario_id, titulo=None):
-        """Presta un libro a un usuario. Si se especifica un título, intenta prestar ese libro."""
+    def prestar_libro(self, usuario_id, titulos=None):
+        """Presta uno o más libros a un usuario. Si se especifican títulos, intenta prestar esos libros."""
         usuario = self.usuarios.get(usuario_id)
         if not usuario:
             return False
-        
-        if titulo:
-            libro = next((libro for libro in self.catalogo if libro.titulo == titulo and libro.disponible), None)
-            if not libro:
+
+        if titulos:
+            libros_a_prestar = [libro for libro in self.catalogo if libro.titulo in titulos and libro.disponible]
+            if not libros_a_prestar:
                 return False
         else:
-            libros_disponibles = self.listar_libros_disponibles()
-            if not libros_disponibles:
+            libros_a_prestar = self.listar_libros_disponibles()
+            if not libros_a_prestar:
                 return False
-            libro = random.choice(libros_disponibles)
-        
-        libro.disponible = False
-        usuario.prestados.append(libro)
+
+        for libro in libros_a_prestar:
+            libro.disponible = False
+            usuario.prestados.append(libro)
+
         return True
 
     def devolver_libro(self, usuario_id, titulo=None):
