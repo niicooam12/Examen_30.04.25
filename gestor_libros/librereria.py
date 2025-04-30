@@ -45,6 +45,7 @@ class Libreria:
         """Devuelve un libro prestado por el usuario. Si se especifica un título, intenta devolver ese libro."""
         usuario = self.usuarios.get(usuario_id)
         if not usuario or not usuario.prestados:
+            print("No hay libros prestados")
             return False
         
         if titulo:
