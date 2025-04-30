@@ -40,11 +40,6 @@ def iniciar_interfaz():
     boton_salir = ttk.Button(ventana, text="Salir", command=ventana.destroy)
     boton_salir.pack(pady=20)
 
-    # Add a progress bar for a dynamic effect
-    progress = ttk.Progressbar(ventana, orient="horizontal", length=200, mode="indeterminate")
-    progress.pack(pady=10)
-    progress.start(10)  # Start the animation
-
     ventana.mainloop()
 
 # Updated realizar_prestamo to select a random user and book, and display the result in the same window
@@ -96,9 +91,8 @@ def agregar_libro():
     def guardar_libro():
         titulo = entry_titulo.get()
         autor = entry_autor.get()
-        genero = entry_genero.get()
-        if titulo and autor and genero:
-            libreria.agregar_libro(titulo, autor, genero)
+        if titulo and autor:
+            libreria.agregar_libro(titulo, autor, None)  # Removed genre
             messagebox.showinfo("Éxito", "Libro agregado exitosamente.")
             ventana_nueva.destroy()
         else:
@@ -114,10 +108,6 @@ def agregar_libro():
     ttk.Label(ventana_nueva, text="Autor:").pack()
     entry_autor = ttk.Entry(ventana_nueva)
     entry_autor.pack()
-
-    ttk.Label(ventana_nueva, text="Género:").pack()
-    entry_genero = ttk.Entry(ventana_nueva)
-    entry_genero.pack()
 
     ttk.Button(ventana_nueva, text="Guardar", command=guardar_libro).pack()
 
