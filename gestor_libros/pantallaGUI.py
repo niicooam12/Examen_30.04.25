@@ -31,6 +31,9 @@ def iniciar_interfaz():
     boton_agregar_usuario = tk.Button(ventana, text="Agregar Nuevo Usuario", command=agregar_usuario)
     boton_agregar_usuario.pack(pady=5)
 
+    boton_ver_prestamos = tk.Button(ventana, text="Ver y Devolver Préstamos", command=ver_y_devolver_prestamos)
+    boton_ver_prestamos.pack(pady=5)
+
     boton_salir = tk.Button(ventana, text="Salir", command=ventana.destroy)
     boton_salir.pack(pady=20)
 
@@ -130,3 +133,53 @@ def agregar_usuario():
     entry_nombre.pack()
 
     tk.Button(ventana_nueva, text="Guardar", command=guardar_usuario).pack()
+
+# Add a new function to view and return borrowed books
+def ver_y_devolver_prestamos():
+    usuarios = libreria.listar_usuarios()
+    if not usuarios:
+        messagebox.showinfo("Error", "No hay usuarios registrados.")
+        return
+
+    def seleccionar_usuario():
+        usuario_id = int(entry_usuario_id.get())
+        usuario = next((u for u in usuarios if u.id_usuario == usuario_id), None)
+        if not usuario:
+            messagebox.showinfo("Error", "Usuario no encontrado.")
+            return
+
+        prestamos = libreria.listar_prestamos_usuario(usuario_id)
+        if not prestamos:
+            messagebox.showinfo("Error", "El usuario no tiene libros prestados.")
+            return
+
+        def devolver_libro():
+            titulo = entry_titulo.get()
+            exito = libreria.devolver_libro(usuario_id, titulo)
+            if exito:
+                messagebox.showinfo("Éxito", f"El libro '{titulo}' ha sido devuelto.")
+                ventana_prestamos.destroy()
+            else:
+                messagebox.showinfo("Error", "No se pudo devolver el libro.")
+
+        ventana_prestamos = tk.Toplevel()
+        ventana_prestamos.title("Libros Prestados")
+
+        tk.Label(ventana_prestamos, text=f"Libros prestados por {usuario.nombre}:").pack()
+        for libro in prestamos:
+            tk.Label(ventana_prestamos, text=f"- {libro.titulo}").pack()
+
+        tk.Label(ventana_prestamos, text="Título del libro a devolver:").pack()
+        entry_titulo = tk.Entry(ventana_prestamos)
+        entry_titulo.pack()
+
+        tk.Button(ventana_prestamos, text="Devolver", command=devolver_libro).pack()
+
+    ventana_usuario = tk.Toplevel()
+    ventana_usuario.title("Seleccionar Usuario")
+
+    tk.Label(ventana_usuario, text="ID del Usuario:").pack()
+    entry_usuario_id = tk.Entry(ventana_usuario)
+    entry_usuario_id.pack()
+
+    tk.Button(ventana_usuario, text="Seleccionar", command=seleccionar_usuario).pack()
