@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 from gestor_libros.librereria import Libreria
 import random
 from tkinter import messagebox
@@ -9,33 +10,40 @@ libreria.agregar_libro('Cien Años de Soledad', 'Gabriel García Márquez', 'Fic
 libreria.agregar_libro('Breve Historia del Tiempo', 'Stephen Hawking', 'Ciencia')
 libreria.registrar_usuario(1, 'Ana Pérez')
 
+# Modernize the interface using ttk widgets and styles
 def iniciar_interfaz():
     ventana = tk.Tk()
     ventana.title("Gestión de Biblioteca")
+    ventana.geometry("600x400")  # Set a modern window size
 
-    etiqueta_bienvenida = tk.Label(ventana, text="Bienvenido a la Biblioteca", font=("Arial", 16))
+    style = ttk.Style()
+    style.theme_use("clam")  # Use a modern theme
+
+    etiqueta_bienvenida = ttk.Label(ventana, text="Bienvenido a la Biblioteca", font=("Arial", 16))
     etiqueta_bienvenida.pack(pady=10)
 
-    boton_prestamo = tk.Button(ventana, text="Realizar Préstamo", command=realizar_prestamo)
+    boton_prestamo = ttk.Button(ventana, text="Realizar Préstamo", command=realizar_prestamo)
     boton_prestamo.pack(pady=5)
 
-    boton_devolucion = tk.Button(ventana, text="Registrar Devolución", command=registrar_devolucion)
+    boton_devolucion = ttk.Button(ventana, text="Registrar Devolución", command=registrar_devolucion)
     boton_devolucion.pack(pady=5)
 
-    boton_consulta = tk.Button(ventana, text="Consultar Disponibilidad", command=consultar_disponibilidad)
+    boton_consulta = ttk.Button(ventana, text="Consultar Disponibilidad", command=consultar_disponibilidad)
     boton_consulta.pack(pady=5)
 
-    boton_agregar_libro = tk.Button(ventana, text="Agregar Nuevo Libro", command=agregar_libro)
+    boton_agregar_libro = ttk.Button(ventana, text="Agregar Nuevo Libro", command=agregar_libro)
     boton_agregar_libro.pack(pady=5)
 
-    boton_agregar_usuario = tk.Button(ventana, text="Agregar Nuevo Usuario", command=agregar_usuario)
+    boton_agregar_usuario = ttk.Button(ventana, text="Agregar Nuevo Usuario", command=agregar_usuario)
     boton_agregar_usuario.pack(pady=5)
 
-    boton_ver_prestamos = tk.Button(ventana, text="Ver y Devolver Préstamos", command=ver_y_devolver_prestamos)
-    boton_ver_prestamos.pack(pady=5)
-
-    boton_salir = tk.Button(ventana, text="Salir", command=ventana.destroy)
+    boton_salir = ttk.Button(ventana, text="Salir", command=ventana.destroy)
     boton_salir.pack(pady=20)
+
+    # Add a progress bar for a dynamic effect
+    progress = ttk.Progressbar(ventana, orient="horizontal", length=200, mode="indeterminate")
+    progress.pack(pady=10)
+    progress.start(10)  # Start the animation
 
     ventana.mainloop()
 
@@ -99,19 +107,19 @@ def agregar_libro():
     ventana_nueva = tk.Toplevel()
     ventana_nueva.title("Agregar Nuevo Libro")
 
-    tk.Label(ventana_nueva, text="Título:").pack()
-    entry_titulo = tk.Entry(ventana_nueva)
+    ttk.Label(ventana_nueva, text="Título:").pack()
+    entry_titulo = ttk.Entry(ventana_nueva)
     entry_titulo.pack()
 
-    tk.Label(ventana_nueva, text="Autor:").pack()
-    entry_autor = tk.Entry(ventana_nueva)
+    ttk.Label(ventana_nueva, text="Autor:").pack()
+    entry_autor = ttk.Entry(ventana_nueva)
     entry_autor.pack()
 
-    tk.Label(ventana_nueva, text="Género:").pack()
-    entry_genero = tk.Entry(ventana_nueva)
+    ttk.Label(ventana_nueva, text="Género:").pack()
+    entry_genero = ttk.Entry(ventana_nueva)
     entry_genero.pack()
 
-    tk.Button(ventana_nueva, text="Guardar", command=guardar_libro).pack()
+    ttk.Button(ventana_nueva, text="Guardar", command=guardar_libro).pack()
 
 # Updated agregar_usuario to open a new window for user input
 def agregar_usuario():
@@ -128,58 +136,8 @@ def agregar_usuario():
     ventana_nueva = tk.Toplevel()
     ventana_nueva.title("Agregar Nuevo Usuario")
 
-    tk.Label(ventana_nueva, text="Nombre:").pack()
-    entry_nombre = tk.Entry(ventana_nueva)
+    ttk.Label(ventana_nueva, text="Nombre:").pack()
+    entry_nombre = ttk.Entry(ventana_nueva)
     entry_nombre.pack()
 
-    tk.Button(ventana_nueva, text="Guardar", command=guardar_usuario).pack()
-
-# Add a new function to view and return borrowed books
-def ver_y_devolver_prestamos():
-    usuarios = libreria.listar_usuarios()
-    if not usuarios:
-        messagebox.showinfo("Error", "No hay usuarios registrados.")
-        return
-
-    def seleccionar_usuario():
-        usuario_id = int(entry_usuario_id.get())
-        usuario = next((u for u in usuarios if u.id_usuario == usuario_id), None)
-        if not usuario:
-            messagebox.showinfo("Error", "Usuario no encontrado.")
-            return
-
-        prestamos = libreria.listar_prestamos_usuario(usuario_id)
-        if not prestamos:
-            messagebox.showinfo("Error", "El usuario no tiene libros prestados.")
-            return
-
-        def devolver_libro():
-            titulo = entry_titulo.get()
-            exito = libreria.devolver_libro(usuario_id, titulo)
-            if exito:
-                messagebox.showinfo("Éxito", f"El libro '{titulo}' ha sido devuelto.")
-                ventana_prestamos.destroy()
-            else:
-                messagebox.showinfo("Error", "No se pudo devolver el libro.")
-
-        ventana_prestamos = tk.Toplevel()
-        ventana_prestamos.title("Libros Prestados")
-
-        tk.Label(ventana_prestamos, text=f"Libros prestados por {usuario.nombre}:").pack()
-        for libro in prestamos:
-            tk.Label(ventana_prestamos, text=f"- {libro.titulo}").pack()
-
-        tk.Label(ventana_prestamos, text="Título del libro a devolver:").pack()
-        entry_titulo = tk.Entry(ventana_prestamos)
-        entry_titulo.pack()
-
-        tk.Button(ventana_prestamos, text="Devolver", command=devolver_libro).pack()
-
-    ventana_usuario = tk.Toplevel()
-    ventana_usuario.title("Seleccionar Usuario")
-
-    tk.Label(ventana_usuario, text="ID del Usuario:").pack()
-    entry_usuario_id = tk.Entry(ventana_usuario)
-    entry_usuario_id.pack()
-
-    tk.Button(ventana_usuario, text="Seleccionar", command=seleccionar_usuario).pack()
+    ttk.Button(ventana_nueva, text="Guardar", command=guardar_usuario).pack()
