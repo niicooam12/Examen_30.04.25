@@ -63,3 +63,7 @@ class Libreria:
         """Lista los libros prestados a un usuario."""
         usuario = self.usuarios.get(usuario_id)
         return usuario.prestados if usuario else []
+
+    def listar_usuarios(self):
+        """Devuelve una lista de todos los usuarios registrados."""
+        return list(self.usuarios.values())
