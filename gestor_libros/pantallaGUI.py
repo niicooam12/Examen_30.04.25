@@ -86,7 +86,7 @@ def agregar_libro():
         titulo = entry_titulo.get()
         autor = entry_autor.get()
         genero = entry_genero.get()
-        if titulo, autor, and genero:
+        if titulo and autor and genero:
             libreria.agregar_libro(titulo, autor, genero)
             messagebox.showinfo("Éxito", "Libro agregado exitosamente.")
             ventana_nueva.destroy()
