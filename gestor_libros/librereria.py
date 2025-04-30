@@ -41,12 +41,19 @@ class Libreria:
         usuario.prestados.append(libro)
         return True
 
-    def devolver_libro(self, usuario_id):
-        """Devuelve un libro aleatorio prestado por el usuario."""
+    def devolver_libro(self, usuario_id, titulo=None):
+        """Devuelve un libro prestado por el usuario. Si se especifica un título, intenta devolver ese libro."""
         usuario = self.usuarios.get(usuario_id)
         if not usuario or not usuario.prestados:
             return False
-        libro = random.choice(usuario.prestados)
+        
+        if titulo:
+            libro = next((libro for libro in usuario.prestados if libro.titulo == titulo), None)
+            if not libro:
+                return False
+        else:
+            libro = random.choice(usuario.prestados)
+        
         libro.disponible = True
         usuario.prestados.remove(libro)
         return True

@@ -10,8 +10,8 @@ if __name__ == '__main__':
     biblioteca.registrar_usuario(1, 'Ana Pérez')
 
     libro_a_prestar = random.choice(['Cien Años de Soledad', 'Breve Historia del Tiempo'])
-    print("¿Préstamo exitoso?", biblioteca.prestar_libro(libro_a_prestar, 1))
+    print("¿Préstamo exitoso?", biblioteca.prestar_libro(1, libro_a_prestar))
     print("Libros prestados a Ana:", [libro.titulo for libro in biblioteca.listar_prestamos_usuario(1)])
 
-    print("¿Devolución exitosa?", biblioteca.devolver_libro(libro_a_prestar, 1))
+    print("¿Devolución exitosa?", biblioteca.devolver_libro(1, libro_a_prestar))
     print("Libros disponibles:", [libro.titulo for libro in biblioteca.listar_libros_disponibles()])
