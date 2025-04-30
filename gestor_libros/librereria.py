@@ -1,5 +1,5 @@
-from .libro import Libro
-from .usuario import Usuario
+from gestor_libros.libro import Libro
+from gestor_libros.usuario import Usuario
 
 class Libreria:
     """Sistema básico de gestión de biblioteca."""
@@ -31,7 +31,7 @@ class Libreria:
         for libro in self.catalogo:
             if libro.titulo == titulo and libro.disponible:
                 libro.disponible = False
-                usuario.prestamos.append(libro)
+                usuario.prestados.append(libro)
                 return True
         return False
 
@@ -41,10 +41,10 @@ class Libreria:
         usuario = self.usuarios.get(usuario_id)
         if not usuario:
             return False
-        for libro in usuario.prestamos:
+        for libro in usuario.prestados:
             if libro.titulo == titulo:
                 libro.disponible = True
-                usuario.prestamos.remove(libro)
+                usuario.prestados.remove(libro)
                 return True
         return False
 
@@ -52,4 +52,4 @@ class Libreria:
     def listar_prestamos_usuario(self, usuario_id):
         """Lista los libros prestados a un usuario."""
         usuario = self.usuarios.get(usuario_id)
-        return usuario.prestamos if usuario else []
+        return usuario.prestados if usuario else []
