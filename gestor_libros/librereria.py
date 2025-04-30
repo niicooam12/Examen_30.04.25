@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import random
 from gestor_libros.libro import Libro
 from gestor_libros.usuario import Usuario
