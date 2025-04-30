@@ -48,7 +48,7 @@ def realizar_prestamo():
     usuario = random.choice(usuarios)
     libro = random.choice(libros_disponibles)
 
-    exito = libreria.prestar_libro(usuario.id, libro.titulo)
+    exito = libreria.prestar_libro(usuario.id_usuario, libro.titulo)
     if exito:
         messagebox.showinfo("Préstamo Exitoso", f"{usuario.nombre} ha cogido el libro '{libro.titulo}'.")
     else:
@@ -57,16 +57,16 @@ def realizar_prestamo():
 # Updated registrar_devolucion to return a book and display the result in the same window
 def registrar_devolucion():
     usuarios = libreria.listar_usuarios()
-    prestamos = [libro for usuario in usuarios for libro in libreria.listar_prestamos_usuario(usuario.id)]
+    prestamos = [libro for usuario in usuarios for libro in libreria.listar_prestamos_usuario(usuario.id_usuario)]
 
     if not prestamos:
         messagebox.showinfo("Error", "No hay libros prestados para devolver.")
         return
 
     libro = random.choice(prestamos)
-    usuario = next(u for u in usuarios if libro in libreria.listar_prestamos_usuario(u.id))
+    usuario = next(u for u in usuarios if libro in libreria.listar_prestamos_usuario(u.id_usuario))
 
-    exito = libreria.devolver_libro(usuario.id, libro.titulo)
+    exito = libreria.devolver_libro(usuario.id_usuario, libro.titulo)
     if exito:
         messagebox.showinfo("Devolución Exitosa", f"{usuario.nombre} ha devuelto el libro '{libro.titulo}'.")
     else:
@@ -86,7 +86,7 @@ def agregar_libro():
         titulo = entry_titulo.get()
         autor = entry_autor.get()
         genero = entry_genero.get()
-        if titulo and autor and genero:
+        if titulo, autor, and genero:
             libreria.agregar_libro(titulo, autor, genero)
             messagebox.showinfo("Éxito", "Libro agregado exitosamente.")
             ventana_nueva.destroy()
@@ -115,7 +115,7 @@ def agregar_usuario():
     def guardar_usuario():
         nombre = entry_nombre.get()
         if nombre:
-            nuevo_id = max([usuario.id for usuario in libreria.listar_usuarios()] + [0]) + 1
+            nuevo_id = max([usuario.id_usuario for usuario in libreria.listar_usuarios()] + [0]) + 1
             libreria.registrar_usuario(nuevo_id, nombre)
             messagebox.showinfo("Éxito", "Usuario agregado exitosamente.")
             ventana_nueva.destroy()
